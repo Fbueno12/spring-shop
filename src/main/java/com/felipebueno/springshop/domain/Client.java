@@ -18,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.felipebueno.springshop.domain.enums.ClientType;
 
 @Entity
-public class Client implements Serializable{
+public class Client implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -28,16 +28,20 @@ public class Client implements Serializable{
 	private String email;
 	private String document;
 	private Integer clientType;
-	
+
 	@JsonManagedReference
 	@OneToMany(mappedBy = "client")
 	private List<Address> addresses = new ArrayList<>();
-	
+
 	@ElementCollection
 	@CollectionTable(name = "TELEPHONE")
 	private Set<String> telephones = new HashSet<>();
-	
-	public Client() {}
+
+	@OneToMany(mappedBy = "client")
+	private List<Demand> demands = new ArrayList<>();
+
+	public Client() {
+	}
 
 	public Client(Integer id, String name, String email, String document, ClientType clientType) {
 		super();
@@ -104,6 +108,14 @@ public class Client implements Serializable{
 		this.telephones = telephones;
 	}
 
+	public List<Demand> getDemands() {
+		return demands;
+	}
+
+	public void setDemands(List<Demand> demands) {
+		this.demands = demands;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -127,7 +139,6 @@ public class Client implements Serializable{
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	} 
-	
-	
+	}
+
 }

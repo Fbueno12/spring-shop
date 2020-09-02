@@ -1,5 +1,6 @@
 package com.felipebueno.springshop;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,37 +12,50 @@ import com.felipebueno.springshop.domain.Address;
 import com.felipebueno.springshop.domain.Category;
 import com.felipebueno.springshop.domain.City;
 import com.felipebueno.springshop.domain.Client;
+import com.felipebueno.springshop.domain.Demand;
+import com.felipebueno.springshop.domain.Payment;
+import com.felipebueno.springshop.domain.PaymentWithBill;
+import com.felipebueno.springshop.domain.PaymentWithCard;
 import com.felipebueno.springshop.domain.Product;
 import com.felipebueno.springshop.domain.State;
 import com.felipebueno.springshop.domain.enums.ClientType;
+import com.felipebueno.springshop.domain.enums.StatePayment;
 import com.felipebueno.springshop.repositories.AddressRepository;
 import com.felipebueno.springshop.repositories.CategoryRepository;
 import com.felipebueno.springshop.repositories.CityRepository;
 import com.felipebueno.springshop.repositories.ClientRepository;
+import com.felipebueno.springshop.repositories.DemandRepository;
+import com.felipebueno.springshop.repositories.PaymentRepository;
 import com.felipebueno.springshop.repositories.ProductRepository;
 import com.felipebueno.springshop.repositories.StateRepository;
 
 @SpringBootApplication
-public class SpringShopApplication implements CommandLineRunner{
+public class SpringShopApplication implements CommandLineRunner {
 
 	@Autowired
 	CategoryRepository categoryRepository;
-	
+
 	@Autowired
 	ProductRepository productRepository;
-	
+
 	@Autowired
 	StateRepository stateRepository;
-	
+
 	@Autowired
 	CityRepository cityRepository;
-	
+
 	@Autowired
 	ClientRepository clientRepository;
 
 	@Autowired
 	AddressRepository addressRepository;
 	
+	@Autowired
+	DemandRepository demandRepository;
+	
+	@Autowired
+	PaymentRepository paymentRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringShopApplication.class, args);
 	}
@@ -88,6 +102,22 @@ public class SpringShopApplication implements CommandLineRunner{
 		
 		clientRepository.saveAll(Arrays.asList(cli1));
 		addressRepository.saveAll(Arrays.asList(e1, e2));
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		Demand ped1 = new Demand(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
+		Demand ped2 = new Demand(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
+		
+		Payment pagto1 = new PaymentWithCard(null, StatePayment.QUITADO, ped1, 6);
+		ped1.setPayment(pagto1);
+		
+		Payment pagto2 = new PaymentWithBill(null, StatePayment.PENDENTE, ped2, sdf.parse("20/10/2017 00:00"), null);
+		ped2.setPayment(pagto2);
+		
+		cli1.getDemands().addAll(Arrays.asList(ped1, ped2));
+		
+		demandRepository.saveAll(Arrays.asList(ped1, ped2));
+		paymentRepository.saveAll(Arrays.asList(pagto1, pagto2));
 		
 	}
 
