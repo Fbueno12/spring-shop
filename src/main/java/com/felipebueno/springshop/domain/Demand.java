@@ -2,6 +2,8 @@ package com.felipebueno.springshop.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,12 +12,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
 public class Demand implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -29,8 +32,11 @@ public class Demand implements Serializable {
 	private Client client;
 
 	@ManyToOne
-	@JoinColumn(name="deliver_address_id")
+	@JoinColumn(name = "deliver_address_id")
 	private Address deliverAddress;
+
+	@OneToMany(mappedBy = "id.demand")
+	private Set<ItemDemand> items = new HashSet<>();
 
 	public Demand() {
 	}
@@ -81,6 +87,14 @@ public class Demand implements Serializable {
 
 	public void setDeliverAddress(Address deliverAddress) {
 		this.deliverAddress = deliverAddress;
+	}
+
+	public Set<ItemDemand> getItems() {
+		return items;
+	}
+
+	public void setItems(Set<ItemDemand> items) {
+		this.items = items;
 	}
 
 	@Override
